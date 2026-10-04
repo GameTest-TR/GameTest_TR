@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>GameTest TR - FPS Test</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+    min-height:100vh;
+    color:white;
+    background:
+    radial-gradient(circle at 10% 0%,#123c58,transparent 35%),
+    radial-gradient(circle at 90% 0%,#29144d,transparent 35%),
+    #050812;
+}
+
+.container{
+    width:min(950px,94%);
+    margin:auto;
+    padding:25px 0 45px;
+}
+
+header{
+    text-align:center;
+    padding:25px 0 35px;
+}
+
+.logo{
+    font-size:43px;
+    font-weight:900;
+    color:#00eaff;
+    text-shadow:0 0 25px rgba(0,234,255,.55);
+}
+
+header p{
+    margin-top:10px;
+    color:#9fafc2;
+}
+
+.card{
+    background:rgba(9,18,31,.94);
+    border:1px solid rgba(0,234,255,.2);
+    border-radius:22px;
+    padding:24px;
+    margin-bottom:20px;
+    box-shadow:0 15px 45px rgba(0,0,0,.35);
+}
+
+h2{
+    color:#00eaff;
+    margin-bottom:18px;
+}
+
+.device{
+    text-align:center;
+    padding:22px;
+    border-radius:17px;
+    background:linear-gradient(
+        135deg,
+        rgba(0,234,255,.07),
+        rgba(102,60,255,.08)
+    );
+}
+
+.deviceIcon{
+    font-size:48px;
+}
+
+.deviceName{
+    font-size:24px;
+    font-weight:bold;
+    margin:8px 0;
+}
+
+.deviceInfo{
+    color:#9fafc2;
+    font-size:14px;
+}
+
+.specs{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+    margin-top:18px;
+}
+
+.spec{
+    padding:12px;
+    border-radius:11px;
+    background:#0b1524;
+    color:#c1cfdd;
+    font-size:14px;
+}
+
+label{
+    display:block;
+    color:#c5d2df;
+    margin:17px 0 7px;
+}
+
+select{
+    width:100%;
+    padding:14px;
+    background:#0a1422;
+    color:white;
+    border:1px solid #2d425a;
+    border-radius:12px;
+    font-size:16px;
+    outline:none;
+}
+
+button{
+    width:100%;
+    border:0;
+    border-radius:14px;
+    padding:16px;
+    margin-top:20px;
+    color:white;
+    background:linear-gradient(90deg,#00c6ff,#684cff);
+    font-size:17px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.2s;
+}
+
+button:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 30px rgba(0,190,255,.25);
+}
+
+.analysis{
+    display:none;
+    text-align:center;
+}
+
+.loader{
+    width:58px;
+    height:58px;
+    margin:20px auto;
+    border:5px solid #26374b;
+    border-top-color:#00eaff;
+    border-radius:50%;
+    animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+    to{
+        transform:rotate(360deg);
+    }
+}
+
+.analysisText{
+    color:#aabacc;
+}
+
+.benchmark{
+    display:none;
+    text-align:center;
+}
+
+.testCanvas{
+    width:100%;
+    height:150px;
+    display:block;
+    margin-top:20px;
+    border-radius:14px;
+    background:#060b14;
+    border:1px solid #1c3047;
+}
+
+.progressBox{
+    width:100%;
+    height:12px;
+    background:#101c2b;
+    border-radius:20px;
+    overflow:hidden;
+    margin-top:20px;
+}
+
+.progress{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,#00eaff,#6c4cff);
+    transition:width:.15s;
+}
+
+.result{
+    display:none;
+    text-align:center;
+}
+
+.gameName{
+    color:#a9b9ca;
+}
+
+.score{
+    font-size:62px;
+    font-weight:900;
+    margin:10px 0;
+    color:#00ffb3;
+    text-shadow:0 0 25px rgba(0,255,179,.3);
+}
+
+.scoreLabel{
+    color:#93a6ba;
+}
+
+.fps{
+    font-size:54px;
+    font-weight:900;
+    color:#00eaff;
+    margin-top:18px;
+}
+
+.range{
+    color:#93a6ba;
+    margin-top:5px;
+}
+
+.status{
+    display:inline-block;
+    padding:9px 16px;
+    margin-top:15px;
+    border-radius:30px;
+    background:rgba(0,255,179,.08);
+    font-weight:bold;
+}
+
+.warning{
+    margin-top:20px;
+    padding:14px;
+    border-radius:12px;
+    background:rgba(255,190,0,.07);
+    color:#ffc857;
+    font-size:13px;
+    line-height:1.5;
+}
+
+.footer{
+    text-align:center;
+    color:#64758b;
+    font-size:13px;
+    margin-top:30px;
+}
+
+@media(max-width:600px){
+
+    .logo{
+        font-size:32px;
+    }
+
+    .card{
+        padding:18px;
+    }
+
+    .specs{
+        grid-template-columns:1fr;
+    }
+
+    .score{
+        font-size:50px;
+    }
+
+    .fps{
+        font-size:44px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+    <div class="logo">🎮 GameTest TR</div>
+    <p>Cihazını test et • Performansını öğren • FPS tahmini al</p>
+</header>
+
+
+<!-- CİHAZ -->
+
+<div class="card">
+
+<h2>🤖 Cihaz Analizi</h2>
+
+<div class="device">
+
+<div class="deviceIcon" id="deviceIcon">
+🔍
+</div>
+
+<div class="deviceName" id="deviceName">
+Cihaz algılanıyor...
+</div>
+
+<div class="deviceInfo" id="deviceInfo">
+Bilgiler okunuyor...
+</div>
+
+<div class="specs">
+
+<div class="spec" id="cpuInfo">
+CPU çekirdeği: -
+</div>
+
+<div class="spec" id="ramInfo">
+RAM: -
+</div>
+
+<div class="spec" id="screenInfo">
+Ekran: -
+</div>
+
+<div class="spec" id="platformInfo">
+Platform: -
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- SEÇİMLER -->
+
+<div class="card">
+
+<h2>🎮 Oyun Testi</h2>
+
+<label>Platform</label>
+
+<select id="platformSelect">
+<option value="auto">Otomatik</option>
+<option value="pc">PC</option>
+<option value="mobile">Mobil</option>
+</select>
+
+
+<label>Oyun</label>
+
+<select id="game"></select>
+
+
+<label>Grafik Kalitesi</label>
+
+<select id="quality">
+
+<option value="low">Düşük</option>
+<option value="medium" selected>Orta</option>
+<option value="high">Yüksek</option>
+<option value="ultra">Ultra</option>
+
+</select>
+
+
+<button onclick="startTest()">
+🚀 CİHAZI TEST ET
+</button>
+
+</div>
+
+
+<!-- ANALİZ -->
+
+<div class="card analysis" id="analysis">
+
+<h2>🤖 Cihaz Analiz Ediliyor</h2>
+
+<div class="loader"></div>
+
+<div class="analysisText" id="analysisText">
+Cihaz bilgileri okunuyor...
+</div>
+
+</div>
+
+
+<!-- BENCHMARK -->
+
+<div class="card benchmark" id="benchmark">
+
+<h2>⚡ Performans Testi</h2>
+
+<p class="analysisText">
+Tarayıcı üzerinde gerçek bir performans testi çalışıyor...
+</p>
+
+<canvas class="testCanvas" id="testCanvas"></canvas>
+
+<div class="progressBox">
+    <div class="progress" id="progress"></div>
+</div>
+
+<p class="analysisText" id="benchmarkText">
+Hazırlanıyor...
+</p>
+
+</div>
+
+
+<!-- SONUÇ -->
+
+<div class="card result" id="result">
+
+<h2>📊 Test Sonucu</h2>
+
+<div class="gameName" id="resultGame">
+-
+</div>
+
+
+<div class="score" id="score">
+0
+</div>
+
+<div class="scoreLabel">
+GameTest Performans Skoru
+</div>
+
+
+<div class="fps" id="fps">
+0 FPS
+</div>
+
+<div class="range" id="range">
+Tahmini FPS aralığı
+</div>
+
+
+<div class="status" id="status">
+-
+</div>
+
+
+<div class="warning">
+
+⚠️ Bu FPS değeri tahmindir.
+GameTest TR'nin yaptığı benchmark tarayıcıdaki gerçek
+cihaz performansını ölçer; başka bir oyunun içindeki
+gerçek FPS sayacını okuyamaz.
+
+</div>
+
+
+<button onclick="startTest()">
+🔄 TEKRAR TEST ET
+</button>
+
+</div>
+
+
+<div class="footer">
+© 2026 GameTest TR • FPS & Cihaz Testleri
+</div>
+
+</div>
+
+
+<script>
+
+/* ==========================================
+   CİHAZ
+========================================== */
+
+let device={
+
+    mobile:false,
+
+    cores:navigator.hardwareConcurrency || 4,
+
+    memory:navigator.deviceMemory || 4,
+
+    width:screen.width,
+
+    height:screen.height,
+
+    dpr:window.devicePixelRatio || 1
+
+};
+
+
+function detectDevice(){
+
+    const ua=navigator.userAgent;
+
+    device.mobile=
+        /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
+
+
+    let name="Windows PC";
+
+
+    if(/iPhone/i.test(ua)){
+
+        name="iPhone";
+
+    }
+
+    else if(/iPad/i.test(ua)){
+
+        name="iPad";
+
+    }
+
+    else if(/Android/i.test(ua)){
+
+        const match=
+            ua.match(/Android.*?;\s*(.*?)\s+Build\//);
+
+        if(match && match[1]){
+
+            name=match[1];
+
+        }
+
+        else{
+
+            name="Android cihaz";
+
+        }
+
+    }
+
+    else if(/Macintosh/i.test(ua)){
+
+        name="Mac";
+
+    }
+
+    else if(/Linux/i.test(ua)){
+
+        name="Linux PC";
+
+    }
+
+
+    document.getElementById("deviceName")
+        .textContent=name;
+
+
+    document.getElementById("deviceIcon")
+        .textContent=device.mobile ? "📱":"💻";
+
+
+    document.getElementById("deviceInfo")
+        .textContent=
+        device.mobile
+        ? "Mobil cihaz algılandı"
+        : "Bilgisayar algılandı";
+
+
+    document.getElementById("cpuInfo")
+        .textContent=
+        "CPU çekirdeği: "+device.cores;
+
+
+    document.getElementById("ramInfo")
+        .textContent=
+        "RAM: "+device.memory+" GB";
+
+
+    document.getElementById("screenInfo")
+        .textContent=
+        "Ekran: "+
+        device.width+
+        " × "+
+        device.height;
+
+
+    document.getElementById("platformInfo")
+        .textContent=
+        "Platform: "+
+        (device.mobile ? "Mobil":"PC");
+
+
+    document.getElementById("platformSelect").value=
+        device.mobile ? "mobile":"pc";
+
+}
+
+
+/* ==========================================
+   OYUNLAR
+========================================== */
+
+const games={
+
+    /* PC */
+
+    gta5:["GTA V","pc",.70],
+
+    gta6:["GTA VI","pc",.28],
+
+    fortnite:["Fortnite","both",.72],
+
+    valorant:["Valorant","pc",1.25],
+
+    cs2:["Counter-Strike 2","pc",.82],
+
+    minecraft:["Minecraft","both",1.00],
+
+    roblox:["Roblox","both",1.08],
+
+    pubg:["PUBG","pc",.75],
+
+    apex:["Apex Legends","pc",.67],
+
+    overwatch2:["Overwatch 2","pc",.82],
+
+    rocketleague:["Rocket League","pc",1.00],
+
+    fc26:["EA Sports FC 26","pc",.72],
+
+    forza5:["Forza Horizon 5","pc",.57],
+
+    rdr2:["Red Dead Redemption 2","pc",.42],
+
+    cyberpunk:["Cyberpunk 2077","pc",.37],
+
+    eldenring:["Elden Ring","pc",.48],
+
+    hogwarts:["Hogwarts Legacy","pc",.43],
+
+    spiderman2:["Marvel's Spider-Man 2","pc",.38],
+
+    godofwar:["God of War Ragnarök","pc",.44],
+
+    warzone:["Call of Duty: Warzone","pc",.55],
+
+    acshadows:["Assassin's Creed Shadows","pc",.34],
+
+    lastofus2:["The Last of Us Part II","pc",.40],
+
+    wukong:["Black Myth: Wukong","pc",.32],
+
+    /* MOBİL */
+
+    pubgmobile:["PUBG Mobile","mobile",.72],
+
+    codmobile:["Call of Duty Mobile","mobile",.82],
+
+    freefire:["Free Fire","mobile",1.25],
+
+    freefiremax:["Free Fire MAX","mobile",1.05],
+
+    efootball:["eFootball","mobile",.90],
+
+    fcmobile:["EA Sports FC Mobile","mobile",.94],
+
+    mobilelegends:["Mobile Legends","mobile",1.10],
+
+    brawlstars:["Brawl Stars","mobile",1.30],
+
+    clashroyale:["Clash Royale","mobile",1.40],
+
+    genshin:["Genshin Impact","mobile",.42],
+
+    honkai:["Honkai: Star Rail","mobile",.38],
+
+    zzz:["Zenless Zone Zero","mobile",.40],
+
+    asphalt9:["Asphalt 9","mobile",.75]
+
+};
+
+
+/* ==========================================
+   OYUNLARI DOLDUR
+========================================== */
+
+function loadGames(){
+
+    const select=
+        document.getElementById("game");
+
+    select.innerHTML="";
+
+
+    const platform=
+        document.getElementById("platformSelect").value;
+
+
+    Object.keys(games).forEach(key=>{
+
+        const game=games[key];
+
+        const name=game[0];
+
+        const gamePlatform=game[1];
+
+
+        if(
+
+            platform==="auto" ||
+
+            gamePlatform==="both" ||
+
+            gamePlatform===platform
+
+        ){
+
+            const option=
+                document.createElement("option");
+
+            option.value=key;
+
+            option.textContent=name;
+
+            select.appendChild(option);
+
+        }
+
+    });
+
+}
+
+
+/* ==========================================
+   GRAFİK
+========================================== */
+
+const qualityMultiplier={
+
+    low:1.45,
+
+    medium:1,
+
+    high:.72,
+
+    ultra:.50
+
+};
+
+
+/* ==========================================
+   GERÇEK TARAYICI BENCHMARK'I
+========================================== */
+
+function runBenchmark(){
+
+    return new Promise(resolve=>{
+
+        const canvas=
+            document.getElementById("testCanvas");
+
+        const ctx=
+            canvas.getContext("2d");
+
+
+        const width=
+            canvas.clientWidth;
+
+        const height=
+            canvas.clientHeight;
+
+
+        canvas.width=width;
+
+        canvas.height=height;
+
+
+        let frames=0;
+
+        let start=performance.now();
+
+        let last=performance.now();
+
+        let totalTime=0;
+
+        let running=true;
+
+
+        function frame(){
+
+            if(!running) return;
+
+
+            const now=
+                performance.now();
+
+
+            frames++;
+
+            totalTime += now-last;
+
+            last=now;
+
+
+            /*
+            Grafik hesaplama yükü.
+            */
+
+            for(let i=0;i<18000;i++){
+
+                const x=
+                    Math.sin(i)*Math.cos(i*0.3);
+
+                const y=
+                    Math.sqrt(Math.abs(x));
+
+                ctx.fillStyle=
+                    `hsl(${(i+frames)%360},80%,60%)`;
+
+                ctx.fillRect(
+                    Math.random()*width,
+                    Math.random()*height,
+                    2,
+                    2
+                );
+
+            }
+
+
+            /*
+            İlerleme.
+            */
+
+            const elapsed=
+                now-start;
+
+            const progress=
+                Math.min(100,(elapsed/4000)*100);
+
+
+            document.getElementById("progress")
+                .style.width=
+                progress+"%";
+
+
+            document.getElementById("benchmarkText")
+                .textContent=
+                "Performans ölçülüyor... "+
+                Math.round(progress)+"%";
+
+
+            if(elapsed>=4000){
+
+                running=false;
+
+
+                const fps=
+                    frames/(elapsed/1000);
+
+
+                /*
+                Benchmark skoru.
+                */
+
+                const score=
+                    Math.round(
+                        fps*10+
+                        device.cores*45+
+                        device.memory*18
+                    );
+
+
+                resolve({
+
+                    fps:fps,
+
+                    score:score
+
+                });
+
+
+                return;
+
+            }
+
+
+            requestAnimationFrame(frame);
+
+        }
+
+
+        requestAnimationFrame(frame);
+
+    });
+
+}
+
+
+/* ==========================================
+   FPS TAHMİNİ
+========================================== */
+
+function estimateGameFPS(
+    benchmarkFPS,
+    score,
+    gameKey,
+    quality
+){
+
+    const game=
+        games[gameKey];
+
+
+    const power=
+        game[2];
+
+
+    let fps;
+
+
+    /*
+    Benchmark + cihaz skoru
+    birlikte kullanılıyor.
+    */
+
+    fps=
+        benchmarkFPS*
+        1.7*
+        power*
+        qualityMultiplier[quality];
+
+
+    fps +=
+        Math.min(score/100,50);
+
+
+    if(device.mobile){
+
+        fps=
+            Math.min(fps,120);
+
+    }
+
+    else{
+
+        fps=
+            Math.min(fps,240);
+
+    }
+
+
+    fps=
+        Math.max(15,fps);
+
+
+    return Math.round(fps);
+
+}
+
+
+/* ==========================================
+   TESTİ BAŞLAT
+========================================== */
+
+async function startTest(){
+
+    const analysis=
+        document.getElementById("analysis");
+
+    const benchmark=
+        document.getElementById("benchmark");
+
+    const result=
+        document.getElementById("result");
+
+
+    analysis.style.display="block";
+
+    benchmark.style.display="none";
+
+    result.style.display="none";
+
+
+    const messages=[
+
+        "🔍 Cihaz özellikleri okunuyor...",
+
+        "🧠 İşlemci bilgileri analiz ediliyor...",
+
+        "💾 Bellek bilgileri değerlendiriliyor...",
+
+        "🖥️ Ekran özellikleri okunuyor..."
+
+    ];
+
+
+    const text=
+        document.getElementById("analysisText");
+
+
+    for(const message of messages){
+
+        text.textContent=message;
+
+        await new Promise(
+            r=>setTimeout(r,450)
+        );
+
+    }
+
+
+    analysis.style.display="none";
+
+    benchmark.style.display="block";
+
+
+    document.getElementById("progress")
+        .style.width="0%";
+
+
+    const benchmarkResult=
+        await runBenchmark();
+
+
+    showResult(benchmarkResult);
+
+}
+
+
+/* ==========================================
+   SONUÇ
+========================================== */
+
+function showResult(data){
+
+    const gameKey=
+        document.getElementById("game").value;
+
+
+    const quality=
+        document.getElementById("quality").value;
+
+
+    const game=
+        games[gameKey];
+
+
+    let fps=
+        estimateGameFPS(
+            data.fps,
+            data.score,
+            gameKey,
+            quality
+        );
+
+
+    /*
+    FPS aralığı.
+    */
+
+    const min=
+        Math.max(10,fps-8);
+
+    const max=
+        fps+8;
+
+
+    document.getElementById("resultGame")
+        .textContent=
+        game[0]+" • "+
+        document.getElementById("quality")
+        .selectedOptions[0].text;
+
+
+    document.getElementById("score")
+        .textContent=
+        data.score;
+
+
+    document.getElementById("fps")
+        .textContent=
+        fps+" FPS";
+
+
+    document.getElementById("range")
+        .textContent=
+        "Tahmini FPS aralığı: "+
+        min+" - "+max+" FPS";
+
+
+    const status=
+        document.getElementById("status");
+
+
+    if(fps>=120){
+
+        status.textContent=
+            "🟢 Çok yüksek performans";
+
+        status.style.color="#00ffb3";
+
+    }
+
+    else if(fps>=90){
+
+        status.textContent=
+            "🟢 Çok akıcı";
+
+        status.style.color="#00ffb3";
+
+    }
+
+    else if(fps>=60){
+
+        status.textContent=
+            "🟢 Akıcı";
+
+        status.style.color="#00ffb3";
+
+    }
+
+    else if(fps>=40){
+
+        status.textContent=
+            "🟡 Oynanabilir";
+
+        status.style.color="#ffc857";
+
+    }
+
+    else{
+
+        status.textContent=
+            "🔴 Düşük performans";
+
+        status.style.color="#ff5c5c";
+
+    }
+
+
+    document.getElementById("benchmark")
+        .style.display="none";
+
+
+    document.getElementById("result")
+        .style.display="block";
+
+
+    document.getElementById("result")
+        .scrollIntoView({
+            behavior:"smooth"
+        });
+
+}
+
+
+/* ==========================================
+   PLATFORM DEĞİŞTİRME
+========================================== */
+
+document
+.getElementById("platformSelect")
+.addEventListener(
+    "change",
+    loadGames
+);
+
+
+/* ==========================================
+   BAŞLANGIÇ
+========================================== */
+
+detectDevice();
+
+loadGames();
+
+</script>
+
+</body>
+</html>
